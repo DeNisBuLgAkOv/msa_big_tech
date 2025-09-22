@@ -1,0 +1,70 @@
+version: "3.8"
+
+services:
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+    ports:
+      - "50054:50054"
+    networks:
+      - messenger-network
+    environment:
+      - GRPC_PORT=50054
+
+  users:
+    build:
+      context: ./users
+      dockerfile: Dockerfile
+    ports:
+      - "50055:50055"
+    networks:
+      - messenger-network
+    environment:
+      - GRPC_PORT=50055
+
+  social:
+    build:
+      context: ./social
+      dockerfile: Dockerfile
+    ports:
+      - "50056:50056"
+    networks:
+      - messenger-network
+    environment:
+      - GRPC_PORT=50056
+
+  chat:
+    build:
+      context: ./chat
+      dockerfile: Dockerfile
+    ports:
+      - "50057:50057"
+    networks:
+      - messenger-network
+    environment:
+      - GRPC_PORT=50057
+
+  gateway:
+    build:
+      context: ./
+      dockerfile: ./gateway/Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - messenger-network
+    environment:
+      - HTTP_PORT=8080
+      - AUTH_GRPC_ADDR=auth:50054
+      - USERS_GRPC_ADDR=users:50055
+      - SOCIAL_GRPC_ADDR=social:50056
+      - CHAT_GRPC_ADDR=chat:50057
+    depends_on:
+      - auth
+      - users
+      - social
+      - chat
+
+networks:
+  messenger-network:
+    driver: bridge

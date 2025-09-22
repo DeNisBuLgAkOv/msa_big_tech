@@ -1,0 +1,31 @@
+syntax = "proto3";
+package github.com.DeNisBuLgAkOv.msa_big_tech.users.v1;
+
+import "proto/v1/users_messages.proto";
+
+import "google/api/annotations.proto";
+
+option go_package = "msa_big_tech/pkg/api/proto/v1;users";
+
+
+
+service UsersService {
+    // Создание профиля
+    rpc CreateProfile(CreateProfileRequest) returns (CreateProfileResponse) {}
+    // Обновление профиля
+    rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse) {}
+    // Получение профиля по id
+    rpc GetProfileByID(GetProfileByIDRequest) returns (GetProfileByIDResponse) {
+        option (google.api.http) = {
+        get: "/v1/profile/{id}"
+        };
+    }
+    // Получение профиля по nickname
+    rpc GetProfileByNickname(GetProfileByNicknameRequest) returns (GetProfileByNicknameResponse) {}
+    // Поиск профилей по query
+    rpc SearchByNickname(SearchByNicknameRequest) returns (SearchByNicknameResponse) {
+        option (google.api.http) = {
+        get: "/v1/users/search"
+        };
+    }
+}

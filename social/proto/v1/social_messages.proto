@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package github.com.DeNisBuLgAkOv.msa_big_tech.social.v1;
+
+option go_package = "msa_big_tech/pkg/api/proto/v1;social";
+
+
+// Объекты
+message FriendRequest {
+    string request_id = 1;
+    Status status = 2;
+  }
+  
+  enum Status {
+    STATUS_PENDING = 0;
+    STATUS_APPROVED = 1;
+    STATUS_DECLINED = 2;
+  }
+
+
+
+ // Отправить заявку
+message SendFriendRequestRequest {
+  string user_id = 1;
+}
+
+message SendFriendRequestResponse {
+  FriendRequest friend_request = 1;
+}
+
+
+//Входящие заявки
+message ListRequestsRequest {
+  string user_id = 1;
+}
+
+message ListRequestsResponse {
+  repeated FriendRequest requests = 1;
+}
+
+//Принять заявку
+message AcceptFriendRequestRequest {
+  string request_id = 1;
+}
+
+message AcceptFriendRequestResponse {
+  FriendRequest friend_request = 1;
+}
+
+// Отклонить заявку
+message DeclineFriendRequestRequest {
+  uint64 request_id = 1;
+}
+
+message DeclineFriendRequestResponse {
+  FriendRequest friend_request = 1;
+}
+
+
+//Удалить пользователя из друзей
+message RemoveFriendRequest {
+  string user_id = 1;
+}
+
+message RemoveFriendResponse {
+}
+
+
+//Список друзей
+message ListFriendsRequest {
+  string user_id = 1;
+  uint32 limit = 2;
+  string cursor = 3;
+}
+
+message ListFriendsResponse {
+  repeated string friend_user_ids = 1;
+  string next_cursor = 2;
+}
