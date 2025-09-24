@@ -1,0 +1,155 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "proto/v1/social_service.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "SocialService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/friends/{userId}/request": {
+      "post": {
+        "summary": "Отправление запроса \"В Друзья\"",
+        "operationId": "SocialService_SendFriendRequest",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SendFriendRequestResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SocialService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "googlerpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "socialv1Status": {
+      "type": "string",
+      "enum": [
+        "STATUS_PENDING",
+        "STATUS_APPROVED",
+        "STATUS_DECLINED"
+      ],
+      "default": "STATUS_PENDING"
+    },
+    "v1AcceptFriendRequestResponse": {
+      "type": "object",
+      "properties": {
+        "friendRequest": {
+          "$ref": "#/definitions/v1FriendRequest"
+        }
+      }
+    },
+    "v1DeclineFriendRequestResponse": {
+      "type": "object",
+      "properties": {
+        "friendRequest": {
+          "$ref": "#/definitions/v1FriendRequest"
+        }
+      }
+    },
+    "v1FriendRequest": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/socialv1Status"
+        }
+      },
+      "title": "Объекты"
+    },
+    "v1ListFriendsResponse": {
+      "type": "object",
+      "properties": {
+        "friendUserIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nextCursor": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ListRequestsResponse": {
+      "type": "object",
+      "properties": {
+        "requests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1FriendRequest"
+          }
+        }
+      }
+    },
+    "v1RemoveFriendResponse": {
+      "type": "object"
+    },
+    "v1SendFriendRequestResponse": {
+      "type": "object",
+      "properties": {
+        "friendRequest": {
+          "$ref": "#/definitions/v1FriendRequest"
+        }
+      }
+    }
+  }
+}

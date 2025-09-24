@@ -1,0 +1,30 @@
+module msa_big_tech/gateway
+
+go 1.25.1
+
+require (
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2
+	google.golang.org/grpc v1.75.1
+	google.golang.org/protobuf v1.36.9 // indirect
+	msa_big_tech/auth v0.0.0
+	msa_big_tech/chat v0.0.0
+	msa_big_tech/social v0.0.0
+	msa_big_tech/users v0.0.0
+)
+
+replace msa_big_tech/auth => ../auth
+
+replace msa_big_tech/chat => ../chat
+
+replace msa_big_tech/users => ../users
+
+replace msa_big_tech/social => ../social
+
+require (
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.9-20250912141014-52f32327d4b0.1 // indirect
+	golang.org/x/net v0.41.0 // indirect
+	golang.org/x/sys v0.33.0 // indirect
+	golang.org/x/text v0.28.0 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250908214217-97024824d090 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250826171959-ef028d996bc1 // indirect
+)

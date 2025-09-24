@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package ggithub.com.DeNisBuLgAkOv.msa_big_tech.chat.v1;
+
+option go_package = "msa_big_tech/pkg/api/proto/v1;chat";
+
+
+
+message Chat {
+    string chat_id = 1;
+    string name = 2;
+  }
+  message Message {
+    uint64 message_id = 1;
+    string text = 2;
+  }
+
+
+// Создание личного чата
+message CreateDirectChatRequest {
+  string participant_id = 1;
+}
+
+message CreateDirectChatResponse {
+   string chat_id = 1;
+}
+
+// Получение информации о чате
+message GetChatRequest {
+    string chat_id = 1;
+}
+
+message GetChatResponse {
+  Chat chat = 1;
+}
+
+// Получение списка чатов пользователя
+message ListUserChatsRequest {
+    string user_id = 1;
+}
+
+message ListUserChatsResponse {
+  repeated Chat chats = 1;
+}
+
+// Получение списка участников чата
+message ListChatMembersRequest {
+    string chat_id = 1;
+}
+
+message ListChatMembersResponse {
+  repeated string user_ids = 1;
+}
+
+// Отправление сообщения
+message SendMessageRequest {
+  string chat_id = 1;
+  string text = 2;
+}
+
+message SendMessageResponse {
+  Message message = 1;
+}
+
+// Получение истории сообщений чата
+message ListMessagesRequest {
+  string chat_id = 1;
+  uint64 limit = 2;
+}
+
+message ListMessagesResponse {
+  repeated Message messages = 1;
+}
+
+// Серверный стрим новых сообщений
+message StreamMessagesRequest {
+    string chat_id = 1;
+}
+
+message StreamMessagesResponse {
+  Message stream = 1;
+}
+

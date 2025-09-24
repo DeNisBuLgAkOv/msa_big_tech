@@ -1,0 +1,44 @@
+package main
+
+import (
+	"fmt"
+	"log/slog"
+	"msa_big_tech/social/internal/transport"
+	social "msa_big_tech/social/pkg/proto/v1"
+
+	"net"
+	"os"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+)
+
+func main() {
+
+	// Инициализация контейнера зависимостей
+	imp := transport.NewImplementation()
+
+	// Создание нового gRPC-сервера
+	grpcSrv := grpc.NewServer()
+
+	// Регистрация сервиса регистрации V1 в gRPC-сервере
+	social.RegisterSocialServiceServer(grpcSrv, imp)
+
+	reflection.Register(grpcSrv)
+
+	// Создание TCP-слушателя на порту, указанном в конфигурации
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", "50056"))
+	if err != nil {
+		slog.Error("failed to listen: %v", err)
+		os.Exit(1)
+	}
+	slog.Info("Listening on port 50056")
+
+	// Запуск gRPC-сервера для обработки входящих запросов
+	err = grpcSrv.Serve(lis)
+	if err != nil {
+		slog.Error("failed to serve: %v", err)
+		os.Exit(1)
+	}
+
+}

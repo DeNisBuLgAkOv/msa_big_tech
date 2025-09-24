@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package ggithub.com.DeNisBuLgAkOv.msa_big_tech.chat.v1;
+
+
+
+import "proto/v1/chat_messages.proto";
+import "google/api/annotations.proto";
+
+
+option go_package = "msa_big_tech/pkg/api/proto/v1;chat";
+
+service ChatService {
+    // Создание личного чата
+    rpc CreateDirectChat(CreateDirectChatRequest) returns (CreateDirectChatResponse) {}
+    // Получение информации о чате
+    rpc GetChat(GetChatRequest) returns (GetChatResponse) {}
+    // Получение списка чатов пользователя
+    rpc ListUserChats(ListUserChatsRequest) returns (ListUserChatsResponse) {}
+    // Получение списка участников чата
+    rpc ListChatMembers(ListChatMembersRequest) returns (ListChatMembersResponse) {}
+    // Отправление сообщения
+    rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {
+        option (google.api.http) = {
+        post: "/api/v1/chats/{chat_id}/message"
+        body: "*"
+        };
+    }
+    // Получение истории сообщений чата
+    rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse) {}
+    // Серверный стрим новых сообщений
+    rpc StreamMessages(StreamMessagesRequest) returns (StreamMessagesResponse) {}
+}
