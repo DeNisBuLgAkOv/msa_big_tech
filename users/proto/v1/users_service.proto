@@ -1,7 +1,7 @@
 syntax = "proto3";
 package github.com.DeNisBuLgAkOv.msa_big_tech.users.v1;
 
-import "proto/v1/users_messages.proto";
+import "v1/users_messages.proto";
 
 import "google/api/annotations.proto";
 

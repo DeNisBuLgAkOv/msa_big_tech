@@ -1,0 +1,18 @@
+CREATE TABLE friends (
+    user_id UUID NOT NULL,
+    friend_id UUID NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    PRIMARY KEY (user_id, friend_id),
+    CHECK (user_id != friend_id) -- нельзя дружить с собой
+);
+
+CREATE TABLE friend_requests (
+    id UUID PRIMARY KEY,
+    from_user_id UUID NOT NULL,
+    to_user_id UUID NOT NULL, 
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    CHECK (from_user_id != to_user_id),
+    CHECK (status IN ('PENDING', 'ACCEPTED', 'DECLINED'))
+);

@@ -4,7 +4,7 @@ package ggithub.com.DeNisBuLgAkOv.msa_big_tech.chat.v1;
 
 
 
-import "proto/v1/chat_messages.proto";
+import "v1/chat_messages.proto";
 import "google/api/annotations.proto";
 
 
