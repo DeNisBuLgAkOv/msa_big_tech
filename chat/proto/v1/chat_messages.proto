@@ -7,13 +7,17 @@ option go_package = "msa_big_tech/pkg/api/proto/v1;chat";
 
 
 message Chat {
-    string chat_id = 1;
-    string name = 2;
-  }
-  message Message {
-    uint64 message_id = 1;
-    string text = 2;
-  }
+  string chat_id = 1;
+  repeated string user_ids = 2;     // участники чата
+  repeated Message messages = 3;           
+}
+
+message Message {
+  uint64 message_id = 1;
+  string text = 2;
+  string chat_id = 3;
+  string user_id = 4;               // кто отправил
+}
 
 
 // Создание личного чата

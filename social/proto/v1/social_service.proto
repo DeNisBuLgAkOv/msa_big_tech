@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package github.com.DeNisBuLgAkOv.msa_big_tech.social.v1;
 
-import "proto/v1/social_messages.proto";
+import "v1/social_messages.proto";
 import "google/api/annotations.proto";
 
 option go_package = "msa_big_tech/pkg/api/proto/v1;social";
@@ -12,7 +12,7 @@ service SocialService {
     // Отправление запроса "В Друзья"
     rpc SendFriendRequest(SendFriendRequestRequest) returns (SendFriendRequestResponse) {
         option (google.api.http) = {
-           post: "/api/v1/friends/{user_id}/request"
+           post: "/api/v1/friends/request"
         };
     }
     // Получение списка входящих запросов

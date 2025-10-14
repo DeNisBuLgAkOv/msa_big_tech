@@ -1,9 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log/slog"
-	"msa_big_tech/social/internal/transport"
+	social_grpc "msa_big_tech/social/internal/delivery/grpc"
+	"msa_big_tech/social/internal/middleware"
+	repos_friends "msa_big_tech/social/internal/repository/postgress/friends"
+	repo_request "msa_big_tech/social/internal/repository/postgress/request"
+	"msa_big_tech/social/internal/usecase"
 	social "msa_big_tech/social/pkg/proto/v1"
 
 	"net"
@@ -15,12 +20,15 @@ import (
 
 func main() {
 
+	db := &sql.DB{}
+	repoRequest := repo_request.NewRequestsRepository(db)
+	repoFriend := repos_friends.NewFriendsRepository(db)
 	// Инициализация контейнера зависимостей
-	imp := transport.NewImplementation()
+	srv := usecase.NewUsecase(*repoFriend, *repoRequest)
+	imp := social_grpc.NewImplementation(srv)
 
 	// Создание нового gRPC-сервера
-	grpcSrv := grpc.NewServer()
-
+	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(middleware.AuthInterceptor()))
 	// Регистрация сервиса регистрации V1 в gRPC-сервере
 	social.RegisterSocialServiceServer(grpcSrv, imp)
 

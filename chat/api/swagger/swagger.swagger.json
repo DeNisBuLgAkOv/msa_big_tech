@@ -1,0 +1,462 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "v1/chat_messages.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "ChatService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/chats/{chatId}/message": {
+      "post": {
+        "summary": "Отправление сообщения",
+        "operationId": "ChatService_SendMessage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SendMessageResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChatServiceSendMessageBody"
+            }
+          }
+        ],
+        "tags": [
+          "ChatService"
+        ]
+      }
+    },
+    "/ggithub.com.DeNisBuLgAkOv.msa_big_tech.chat.v1.ChatService/CreateDirectChat": {
+      "post": {
+        "summary": "Создание личного чата",
+        "operationId": "ChatService_CreateDirectChat",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateDirectChatResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateDirectChatRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ChatService"
+        ]
+      }
+    },
+    "/ggithub.com.DeNisBuLgAkOv.msa_big_tech.chat.v1.ChatService/GetChat": {
+      "post": {
+        "summary": "Получение информации о чате",
+        "operationId": "ChatService_GetChat",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetChatResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1GetChatRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ChatService"
+        ]
+      }
+    },
+    "/ggithub.com.DeNisBuLgAkOv.msa_big_tech.chat.v1.ChatService/ListChatMembers": {
+      "post": {
+        "summary": "Получение списка участников чата",
+        "operationId": "ChatService_ListChatMembers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListChatMembersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1ListChatMembersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ChatService"
+        ]
+      }
+    },
+    "/ggithub.com.DeNisBuLgAkOv.msa_big_tech.chat.v1.ChatService/ListMessages": {
+      "post": {
+        "summary": "Получение истории сообщений чата",
+        "operationId": "ChatService_ListMessages",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListMessagesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1ListMessagesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ChatService"
+        ]
+      }
+    },
+    "/ggithub.com.DeNisBuLgAkOv.msa_big_tech.chat.v1.ChatService/ListUserChats": {
+      "post": {
+        "summary": "Получение списка чатов пользователя",
+        "operationId": "ChatService_ListUserChats",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListUserChatsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1ListUserChatsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ChatService"
+        ]
+      }
+    },
+    "/ggithub.com.DeNisBuLgAkOv.msa_big_tech.chat.v1.ChatService/StreamMessages": {
+      "post": {
+        "summary": "Серверный стрим новых сообщений",
+        "operationId": "ChatService_StreamMessages",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1StreamMessagesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1StreamMessagesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ChatService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "ChatServiceSendMessageBody": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        }
+      },
+      "title": "Отправление сообщения"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1Chat": {
+      "type": "object",
+      "properties": {
+        "chatId": {
+          "type": "string"
+        },
+        "userIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "участники чата"
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Message"
+          }
+        }
+      }
+    },
+    "v1CreateDirectChatRequest": {
+      "type": "object",
+      "properties": {
+        "participantId": {
+          "type": "string"
+        }
+      },
+      "title": "Создание личного чата"
+    },
+    "v1CreateDirectChatResponse": {
+      "type": "object",
+      "properties": {
+        "chatId": {
+          "type": "string"
+        }
+      }
+    },
+    "v1GetChatRequest": {
+      "type": "object",
+      "properties": {
+        "chatId": {
+          "type": "string"
+        }
+      },
+      "title": "Получение информации о чате"
+    },
+    "v1GetChatResponse": {
+      "type": "object",
+      "properties": {
+        "chat": {
+          "$ref": "#/definitions/v1Chat"
+        }
+      }
+    },
+    "v1ListChatMembersRequest": {
+      "type": "object",
+      "properties": {
+        "chatId": {
+          "type": "string"
+        }
+      },
+      "title": "Получение списка участников чата"
+    },
+    "v1ListChatMembersResponse": {
+      "type": "object",
+      "properties": {
+        "userIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "v1ListMessagesRequest": {
+      "type": "object",
+      "properties": {
+        "chatId": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "title": "Получение истории сообщений чата"
+    },
+    "v1ListMessagesResponse": {
+      "type": "object",
+      "properties": {
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Message"
+          }
+        }
+      }
+    },
+    "v1ListUserChatsRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        }
+      },
+      "title": "Получение списка чатов пользователя"
+    },
+    "v1ListUserChatsResponse": {
+      "type": "object",
+      "properties": {
+        "chats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Chat"
+          }
+        }
+      }
+    },
+    "v1Message": {
+      "type": "object",
+      "properties": {
+        "messageId": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "text": {
+          "type": "string"
+        },
+        "chatId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string",
+          "title": "кто отправил"
+        }
+      }
+    },
+    "v1SendMessageResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "$ref": "#/definitions/v1Message"
+        }
+      }
+    },
+    "v1StreamMessagesRequest": {
+      "type": "object",
+      "properties": {
+        "chatId": {
+          "type": "string"
+        }
+      },
+      "title": "Серверный стрим новых сообщений"
+    },
+    "v1StreamMessagesResponse": {
+      "type": "object",
+      "properties": {
+        "stream": {
+          "$ref": "#/definitions/v1Message"
+        }
+      }
+    }
+  }
+}

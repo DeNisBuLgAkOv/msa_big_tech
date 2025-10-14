@@ -24,32 +24,29 @@ VENDOR_PROTO_PATH := $(CURDIR)/vendor.protobuf
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
 	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
+	go install github.com/bufbuild/buf/cmd/buf@latest
+	go install github.com/yoheimuta/protolint/cmd/protolint@latest
 
-# генерация .go файлов с помощью protoc
-.protoc-generate:
-	mkdir -p $(PKG_PROTO_PATH)
-	$(PROTOC) -I $(VENDOR_PROTO_PATH) --proto_path=$(CURDIR) \
-	--go_out=$(PKG_PROTO_PATH) --go_opt paths=source_relative \
-	--go-grpc_out=$(PKG_PROTO_PATH) --go-grpc_opt paths=source_relative \
-	--grpc-gateway_out=$(PKG_PROTO_PATH) --grpc-gateway_opt paths=source_relative --grpc-gateway_opt generate_unbound_methods=true \
-	$(PROTO_PATH_V1)/auth_messages.proto $(PROTO_PATH_V1)/auth_service.proto
-	
-	$(PROTOC) -I $(VENDOR_PROTO_PATH) --proto_path=$(CURDIR) \
-	--openapiv2_out=. --openapiv2_opt logtostderr=true \
-	$(PROTO_PATH_V1)/auth_service.proto
-
-
-# go mod tidy
-.tidy:
-	GOBIN=$(LOCAL_BIN) go mod tidy
-
-# Генерация кода из protobuf
-generate: .bin-deps .protoc-generate .tidy
-
+generate: export GOBIN := $(LOCAL_BIN)
+generate:
+	PATH=$(LOCAL_BIN):PATH $(LOCAL_BIN)/buf generate
+    
 # Билд приложения
 build:
 	go build -o $(LOCAL_BIN) ./cmd/notes/client
-	go build -o $(LOCAL_BIN) ./cmd/notes/server 
+	go build -o $(LOCAL_BIN) ./cmd/notes/server
+
+# Линтер
+lint: .proto-lint
+
+# Линтер proto файлов
+.proto-lint:
+	$(LOCAL_BIN)/protolint -config_path ./.protolint.yaml ./proto/
+
+# Форматирование protobuf файлов
+proto-format:
+	$(info run buf format...)
+	$(LOCAL_BIN)/buf format -w
 	
 # Объявляем, что текущие команды не являются файлами и
 # интсрументируем Makefile не искать изменения в файловой системе
@@ -57,7 +54,9 @@ build:
 	.bin-deps \
 	.protoc-generate \
 	.tidy \
-	.vendor-protovalidate \
+	.proto-lint \
+	proto-format \
 	vendor \
 	generate \
-	build
+	build \
+	lint

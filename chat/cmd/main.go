@@ -1,9 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log/slog"
-	"msa_big_tech/chat/internal/transport"
+	delivery_grpc "msa_big_tech/chat/internal/delivery/grpc"
+	"msa_big_tech/chat/internal/middleware"
+	repo_chat "msa_big_tech/chat/internal/repository/postgress/chat"
+	repo_message "msa_big_tech/chat/internal/repository/postgress/message"
+	"msa_big_tech/chat/internal/usecase"
 	chat "msa_big_tech/chat/pkg/proto/v1"
 
 	"net"
@@ -16,10 +21,14 @@ import (
 func main() {
 
 	// Инициализация контейнера зависимостей
-	imp := transport.NewImplementation()
+	db := &sql.DB{}
+	repoChat := repo_chat.NewChatRepository(db)
+	repoMessage := repo_message.NewMessageRepository(db)
+	srv := usecase.NewUseCase(*repoChat, *repoMessage)
+	imp := delivery_grpc.NewImplementation(srv)
 
 	// Создание нового gRPC-сервера
-	grpcSrv := grpc.NewServer()
+	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(middleware.AuthInterceptor()))
 
 	// Регистрация сервиса регистрации V1 в gRPC-сервере
 	chat.RegisterChatServiceServer(grpcSrv, imp)
