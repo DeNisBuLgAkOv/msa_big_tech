@@ -3,8 +3,8 @@ package transaction_manager
 import (
 	"context"
 	"fmt"
-	"msa_big_tech/lib/postgreslib"
 
+	"github.com/DeNisBuLgAkOv/msa_big_tech/lib/postgreslib"
 	"github.com/jackc/pgx/v5"
 )
 

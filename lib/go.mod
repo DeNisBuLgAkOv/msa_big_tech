@@ -1,4 +1,4 @@
-module msa_big_tech/lib
+module github.com/DeNisBuLgAkOv/msa_big_tech/lib
 
 go 1.25.1
 
