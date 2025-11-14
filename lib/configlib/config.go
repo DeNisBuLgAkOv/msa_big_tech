@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -43,20 +42,30 @@ type DatabaseConfig struct {
 }
 
 func Load() (*BaseConfig, error) {
-
-	_ = godotenv.Load(".env")
-
 	v := viper.New()
 
 	// Дефолты ===
 	setDefaults(v)
+
+	// === Конфигурация файлов ===
+	v.SetConfigName(".env") // имя файла конфигурации
+	v.SetConfigType("env")  // тип файла
+	v.AddConfigPath(".")
+
+	// Читаем конфиг файл
+	if err := v.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return nil, fmt.Errorf("read config failed: %w", err)
+		}
+		// Файл не найден - используем только env переменные
+	}
 
 	// ENV: APP_ префикс ===
 	v.SetEnvPrefix("APP")
 	v.AutomaticEnv()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	// === 4. Поддержка POSTGRES_ (для совместимости) ===
+	// === Поддержка POSTGRES_ (для совместимости) ===
 	v.BindEnv("database.host", "POSTGRES_HOST")
 	v.BindEnv("database.port", "POSTGRES_PORT")
 	v.BindEnv("database.name", "POSTGRES_DB")
