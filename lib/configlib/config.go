@@ -17,7 +17,7 @@ type BaseConfig struct {
 }
 
 type ServiceConfig struct {
-	Name        string `mapstructure:"name"`
+	Name        string `mapstructure:"name" validate:"required"`
 	Version     string `mapstructure:"version"`
 	Environment string `mapstructure:"environment" validate:"oneof=dev stage prod"`
 }
