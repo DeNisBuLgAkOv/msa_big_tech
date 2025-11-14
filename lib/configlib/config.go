@@ -78,9 +78,6 @@ func Load() (*BaseConfig, error) {
 	if err := validateConfig(&cfg); err != nil {
 		return nil, fmt.Errorf("validation failed: %w", err)
 	}
-	if err := cfg.Validate(); err != nil {
-		return nil, err
-	}
 
 	return &cfg, nil
 }
@@ -125,16 +122,3 @@ func (c *BaseConfig) GetDBConnectionString() string {
 
 func (c *BaseConfig) GetGRPCAddress() string { return fmt.Sprintf(":%d", c.Server.GRPC.Port) }
 func (c *BaseConfig) GetHTTPAddress() string { return fmt.Sprintf(":%d", c.Server.HTTP.Port) }
-
-func (c *BaseConfig) Validate() error {
-	if c.Service.Name == "" {
-		return fmt.Errorf("service.name is required")
-	}
-	if c.Server.GRPC.Port == 0 {
-		return fmt.Errorf("server.grpc.port is required")
-	}
-	if c.Database.Host == "" && c.Service.Name != "gateway" {
-		return nil
-	}
-	return nil
-}
