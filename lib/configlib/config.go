@@ -1,4 +1,3 @@
-// configlib/config.go
 package configlib
 
 import (
@@ -6,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -43,6 +43,9 @@ type DatabaseConfig struct {
 }
 
 func Load() (*BaseConfig, error) {
+
+	_ = godotenv.Load(".env")
+
 	v := viper.New()
 
 	// Дефолты ===
