@@ -48,9 +48,7 @@ func Load() (*BaseConfig, error) {
 	setDefaults(v)
 
 	// === Конфигурация файлов ===
-	v.SetConfigName(".env") // имя файла конфигурации
-	v.SetConfigType("env")  // тип файла
-	v.AddConfigPath(".")
+	v.SetConfigFile(".env")
 
 	// Читаем конфиг файл
 	if err := v.ReadInConfig(); err != nil {
