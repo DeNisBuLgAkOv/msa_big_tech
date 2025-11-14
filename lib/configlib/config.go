@@ -44,22 +44,16 @@ type DatabaseConfig struct {
 }
 
 func Load() (*BaseConfig, error) {
-	// === Загружаем .env в окружение ===
 	if err := godotenv.Load(); err != nil && !os.IsNotExist(err) {
 		return nil, fmt.Errorf("load .env file: %w", err)
 	}
 
 	v := viper.New()
-
-	// === Дефолты ===
 	setDefaults(v)
-
-	// === ENV: APP_ префикс ===
 	v.SetEnvPrefix("APP")
 	v.AutomaticEnv()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	// === POSTGRES_ совместимость ===
 	v.BindEnv("database.host", "POSTGRES_HOST")
 	v.BindEnv("database.port", "POSTGRES_PORT")
 	v.BindEnv("database.name", "POSTGRES_DB")
@@ -75,8 +69,25 @@ func Load() (*BaseConfig, error) {
 		return nil, fmt.Errorf("validation failed: %w", err)
 	}
 
+	// === ЛОГИ КАЖДОГО ПАРАМЕТРА ===
+	fmt.Printf("service.name: %s\n", cfg.Service.Name)
+	fmt.Printf("service.version: %s\n", cfg.Service.Version)
+	fmt.Printf("service.environment: %s\n", cfg.Service.Environment)
+
+	fmt.Printf("server.grpc.port: %d\n", cfg.Server.GRPC.Port)
+	fmt.Printf("server.http.port: %d\n", cfg.Server.HTTP.Port)
+
+	fmt.Printf("database.host: %s\n", cfg.Database.Host)
+	fmt.Printf("database.port: %d\n", cfg.Database.Port)
+	fmt.Printf("database.name: %s\n", cfg.Database.Name)
+	fmt.Printf("database.username: %s\n", cfg.Database.Username)
+	fmt.Printf("database.password: %s\n", cfg.Database.Password)
+	fmt.Printf("database.ssl_mode: %s\n", cfg.Database.SSLMode)
+	// ===
+
 	return &cfg, nil
 }
+
 func MustLoad() *BaseConfig {
 	cfg, err := Load()
 	if err != nil {
