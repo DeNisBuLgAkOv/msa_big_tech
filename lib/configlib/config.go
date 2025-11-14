@@ -1,8 +1,9 @@
+// configlib/config.go
 package configlib
 
 import (
 	"fmt"
-	"os"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
@@ -28,7 +29,6 @@ type ServerConfig struct {
 type GRPCConfig struct {
 	Port int `mapstructure:"port" validate:"required,min=1,max=65535"`
 }
-
 type HTTPConfig struct {
 	Port int `mapstructure:"port" validate:"required,min=1,max=65535"`
 }
@@ -42,38 +42,43 @@ type DatabaseConfig struct {
 	SSLMode  string `mapstructure:"ssl_mode"`
 }
 
-// Load загружает конфигурацию из YAML файла
 func Load() (*BaseConfig, error) {
 	v := viper.New()
 
-	// Настройки по умолчанию
+	// Дефолты ===
 	setDefaults(v)
 
-	// Загружаем конфиг из файла
-	v.SetConfigFile("config.yaml")
-	if err := v.ReadInConfig(); err != nil {
-		return nil, fmt.Errorf("failed to read config file : %w", err)
-	}
+	// ENV: APP_ префикс ===
+	v.SetEnvPrefix("APP")
+	v.AutomaticEnv()
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	// Биндим на структуру
+	// === 4. Поддержка POSTGRES_ (для совместимости) ===
+	v.BindEnv("database.host", "POSTGRES_HOST")
+	v.BindEnv("database.port", "POSTGRES_PORT")
+	v.BindEnv("database.name", "POSTGRES_DB")
+	v.BindEnv("database.username", "POSTGRES_USER")
+	v.BindEnv("database.password", "POSTGRES_PASSWORD")
+
 	var cfg BaseConfig
 	if err := v.Unmarshal(&cfg); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
+		return nil, fmt.Errorf("unmarshal failed: %w", err)
 	}
 
-	// Валидация
 	if err := validateConfig(&cfg); err != nil {
-		return nil, fmt.Errorf("config validation failed: %w", err)
+		return nil, fmt.Errorf("validation failed: %w", err)
+	}
+	if err := cfg.Validate(); err != nil {
+		return nil, err
 	}
 
 	return &cfg, nil
 }
 
-// MustLoad загружает конфиг или паникает
 func MustLoad() *BaseConfig {
 	cfg, err := Load()
 	if err != nil {
-		panic(fmt.Sprintf("failed to load config: %v", err))
+		panic(fmt.Sprintf("config load failed: %v", err))
 	}
 	return cfg
 }
@@ -81,18 +86,10 @@ func MustLoad() *BaseConfig {
 func setDefaults(v *viper.Viper) {
 	v.SetDefault("service.environment", "dev")
 	v.SetDefault("service.version", "1.0.0")
-
 	v.SetDefault("server.grpc.port", 50051)
 	v.SetDefault("server.http.port", 8080)
-
 	v.SetDefault("database.port", 5432)
 	v.SetDefault("database.ssl_mode", "disable")
-
-}
-
-func fileExists(path string) bool {
-	_, err := os.Stat(path)
-	return err == nil
 }
 
 func validateConfig(cfg *BaseConfig) error {
@@ -100,56 +97,34 @@ func validateConfig(cfg *BaseConfig) error {
 	return validate.Struct(cfg)
 }
 
-// Хелперы для удобства использования конфига
-func (c *BaseConfig) IsDev() bool {
-	return c.Service.Environment == "dev"
-}
-
-func (c *BaseConfig) IsProd() bool {
-	return c.Service.Environment == "prod"
-}
-
-func (c *BaseConfig) IsStage() bool {
-	return c.Service.Environment == "stage"
-}
+// === Хелперы ===
+func (c *BaseConfig) IsDev() bool   { return c.Service.Environment == "dev" }
+func (c *BaseConfig) IsProd() bool  { return c.Service.Environment == "prod" }
+func (c *BaseConfig) IsStage() bool { return c.Service.Environment == "stage" }
 
 func (c *BaseConfig) GetDBConnectionString() string {
-	return fmt.Sprintf("postgresql://%s:%s@%s:%d/%s",
+	return fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=%s",
 		c.Database.Username,
 		c.Database.Password,
 		c.Database.Host,
 		c.Database.Port,
-		c.Database.Name)
-
-	// return fmt.Sprintf(
-	// 	"host=%s port=%d dbname=%s user=%s password=%s sslmode=%s",
-	// 	c.Database.Host,
-	// 	c.Database.Port,
-	// 	c.Database.Name,
-	// 	c.Database.Username,
-	// 	c.Database.Password,
-	// 	c.Database.SSLMode,
-	// )
+		c.Database.Name,
+		c.Database.SSLMode,
+	)
 }
 
-func (c *BaseConfig) GetGRPCAddress() string {
-	return fmt.Sprintf(":%d", c.Server.GRPC.Port)
-}
+func (c *BaseConfig) GetGRPCAddress() string { return fmt.Sprintf(":%d", c.Server.GRPC.Port) }
+func (c *BaseConfig) GetHTTPAddress() string { return fmt.Sprintf(":%d", c.Server.HTTP.Port) }
 
-func (c *BaseConfig) GetHTTPAddress() string {
-	return fmt.Sprintf(":%d", c.Server.HTTP.Port)
-}
-
-// Validate проверяет обязательные поля
 func (c *BaseConfig) Validate() error {
 	if c.Service.Name == "" {
-		return fmt.Errorf("service name is required")
+		return fmt.Errorf("service.name is required")
 	}
 	if c.Server.GRPC.Port == 0 {
-		return fmt.Errorf("gRPC port is required")
+		return fmt.Errorf("server.grpc.port is required")
 	}
 	if c.Database.Host == "" && c.Service.Name != "gateway" {
-		return fmt.Errorf("database host is required for service %s", c.Service.Name)
+		return nil
 	}
 	return nil
 }
