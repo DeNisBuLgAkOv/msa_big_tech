@@ -1,12 +1,12 @@
-package configlib
+package configs
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
+	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 )
 
@@ -17,7 +17,7 @@ type BaseConfig struct {
 }
 
 type ServiceConfig struct {
-	Name        string `mapstructure:"name" validate:"required"`
+	Title       string `mapstructure:"title"`
 	Version     string `mapstructure:"version"`
 	Environment string `mapstructure:"environment" validate:"oneof=dev stage prod"`
 }
@@ -44,7 +44,8 @@ type DatabaseConfig struct {
 }
 
 func Load() (*BaseConfig, error) {
-	if err := godotenv.Load(); err != nil && !os.IsNotExist(err) {
+
+	if err := godotenv.Load(".env"); err != nil {
 		return nil, fmt.Errorf("load .env file: %w", err)
 	}
 
@@ -61,7 +62,10 @@ func Load() (*BaseConfig, error) {
 	v.BindEnv("database.password", "POSTGRES_PASSWORD")
 
 	var cfg BaseConfig
-	if err := v.Unmarshal(&cfg); err != nil {
+	if err := v.Unmarshal(&cfg, viper.DecodeHook(mapstructure.ComposeDecodeHookFunc(
+		mapstructure.StringToTimeDurationHookFunc(),
+		mapstructure.StringToSliceHookFunc(","),
+	))); err != nil {
 		return nil, fmt.Errorf("unmarshal failed: %w", err)
 	}
 
@@ -69,25 +73,8 @@ func Load() (*BaseConfig, error) {
 		return nil, fmt.Errorf("validation failed: %w", err)
 	}
 
-	// === ЛОГИ КАЖДОГО ПАРАМЕТРА ===
-	fmt.Printf("service.name: %s\n", cfg.Service.Name)
-	fmt.Printf("service.version: %s\n", cfg.Service.Version)
-	fmt.Printf("service.environment: %s\n", cfg.Service.Environment)
-
-	fmt.Printf("server.grpc.port: %d\n", cfg.Server.GRPC.Port)
-	fmt.Printf("server.http.port: %d\n", cfg.Server.HTTP.Port)
-
-	fmt.Printf("database.host: %s\n", cfg.Database.Host)
-	fmt.Printf("database.port: %d\n", cfg.Database.Port)
-	fmt.Printf("database.name: %s\n", cfg.Database.Name)
-	fmt.Printf("database.username: %s\n", cfg.Database.Username)
-	fmt.Printf("database.password: %s\n", cfg.Database.Password)
-	fmt.Printf("database.ssl_mode: %s\n", cfg.Database.SSLMode)
-	// ===
-
 	return &cfg, nil
 }
-
 func MustLoad() *BaseConfig {
 	cfg, err := Load()
 	if err != nil {
@@ -126,5 +113,5 @@ func (c *BaseConfig) GetDBConnectionString() string {
 	)
 }
 
-func (c *BaseConfig) GetGRPCAddress() string { return fmt.Sprintf(":%d", c.Server.GRPC.Port) }
-func (c *BaseConfig) GetHTTPAddress() string { return fmt.Sprintf(":%d", c.Server.HTTP.Port) }
+func (c *BaseConfig) GetGRPCAddress() string { return fmt.Sprintf("%d", c.Server.GRPC.Port) }
+func (c *BaseConfig) GetHTTPAddress() string { return fmt.Sprintf("%d", c.Server.HTTP.Port) }
